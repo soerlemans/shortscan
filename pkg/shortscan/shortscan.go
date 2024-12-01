@@ -183,7 +183,7 @@ func delayRequest() {
 	sleepDuration := time.Until(lastRequestTime.Add(requestDelay))
 	time.Sleep(sleepDuration)
 
-	log.WithFields(log.Fields{"lastRequestTime": lastRequestTime, "requestDelay": requestDelay}).Info("Rate")
+	log.WithFields(log.Fields{"lastRequestTime": lastRequestTime, "requestDelay": requestDelay}).Info("Rate limit metadata")
 
 	// Update last request time
 	lastRequestTime = time.Now()
@@ -1071,7 +1071,7 @@ func Run() {
 	// If the rate limit is a negative treat it as no rate limit
 	delay := args.Rate
 	if args.Rate != 0 {
-		delay = 1_000_000/args.Rate
+		delay = 1_000_000 / args.Rate
 	}
 
 	// Initialize the calculated delay between requests, according to rate limit
