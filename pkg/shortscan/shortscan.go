@@ -151,7 +151,7 @@ type arguments struct {
 	FullUrl      bool     `arg:"-F" help:"display the full URL for confirmed files rather than just the filename" default:"false"`
 	NoRecurse    bool     `arg:"-n" help:"don't detect and recurse into subdirectories (disabled when autocomplete is disabled)" default:"false"`
 	Stabilise    bool     `arg:"-s" help:"attempt to get coherent autocomplete results from an unstable server (generates more requests)" default:"false"`
-	Rate         float64  `arg:"-r" help:"maximum requests per second" default:"1.0"`
+	Rate         uint     `arg:"-r" help:"maximum requests per second" default:"0"`
 	Patience     int      `arg:"-p" help:"patience level when determining vulnerability (0 = patient; 1 = very patient)" placeholder:"LEVEL" default:"0"`
 	Characters   string   `arg:"-C" help:"filename characters to enumerate" default:"JFKGOTMYVHSPCANDXLRWEBQUIZ8549176320-_()&'!#$%@^{}~"`
 	Autocomplete string   `arg:"-a" help:"autocomplete detection mode (auto = autoselect; method = HTTP method magic; status = HTTP status; distance = Levenshtein distance; none = disable)" placeholder:"mode" default:"auto"`
@@ -1068,13 +1068,14 @@ func Run() {
 		p.Fail("output must be one of: human, json")
 	}
 
-	// If the rate limit is a negative value we should error
-	if args.Rate < 0 {
-		p.Fail("negative rate limit is not allowed")
+	// If the rate limit is a negative treat it as no rate limit
+	delay := args.Rate
+	if args.Rate != 0 {
+		delay = 1_000_000/args.Rate
 	}
 
 	// Initialize the calculated delay between requests, according to rate limit
-	requestDelay = time.Duration(1_000_000/args.Rate) * time.Microsecond
+	requestDelay = time.Duration(delay) * time.Microsecond
 
 	// Build the list of URLs to scan
 	var urls []string
