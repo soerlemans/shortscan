@@ -151,7 +151,7 @@ type arguments struct {
 	FullUrl      bool     `arg:"-F" help:"display the full URL for confirmed files rather than just the filename" default:"false"`
 	NoRecurse    bool     `arg:"-n" help:"don't detect and recurse into subdirectories (disabled when autocomplete is disabled)" default:"false"`
 	Stabilise    bool     `arg:"-s" help:"attempt to get coherent autocomplete results from an unstable server (generates more requests)" default:"false"`
-	Rate         uint     `arg:"-r" help:"maximum requests per second" default:"0"`
+	Rate         float32  `arg:"-r" help:"maximum requests per second, supports floating point values" default:"0.0"`
 	Patience     int      `arg:"-p" help:"patience level when determining vulnerability (0 = patient; 1 = very patient)" placeholder:"LEVEL" default:"0"`
 	Characters   string   `arg:"-C" help:"filename characters to enumerate" default:"JFKGOTMYVHSPCANDXLRWEBQUIZ8549176320-_()&'!#$%@^{}~"`
 	Autocomplete string   `arg:"-a" help:"autocomplete detection mode (auto = autoselect; method = HTTP method magic; status = HTTP status; distance = Levenshtein distance; none = disable)" placeholder:"mode" default:"auto"`
@@ -1071,7 +1071,7 @@ func Run() {
 	// If the rate limit is a negative treat it as no rate limit
 	delay := args.Rate
 	if args.Rate != 0 {
-		delay = 1_000_000 / args.Rate
+		delay = 1_000_000.0 / args.Rate
 	}
 
 	// Initialize the calculated delay between requests, according to rate limit
